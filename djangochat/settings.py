@@ -88,18 +88,16 @@ ASGI_APPLICATION = 'djangochat.asgi.application'
 # }
 
 # settings.py
-
+REDIS_URL = os.environ.get('REDIS_URL', 'redis://red-cjscomktjf3s73bfnmqg:6379')
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": ["redis://red-cjsc63lm702s73ftatt0:6379"],
+            "hosts": [REDIS_URL],
         },
     },
 }
-r = redis.from_url(os.environ['redis://red-cjsc63lm702s73ftatt0:6379'])
-r.set('key', 'redis-py')
-r.get('key')
+
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

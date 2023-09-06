@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import redis
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -95,7 +97,9 @@ CHANNEL_LAYERS = {
         },
     },
 }
-
+r = redis.from_url(os.environ['redis://red-cjsc63lm702s73ftatt0:6379'])
+r.set('key', 'redis-py')
+r.get('key')
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

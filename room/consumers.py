@@ -1,13 +1,20 @@
 import json 
+import asyncio
+import aioredis
+
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from .models import Message,Room
+from django.conf import settings
+
 
 class ChatConsumer(AsyncWebsocketConsumer):
      async def connect(self):
         self.room_name= self.scope['url_route']['kwargs']['room_name']
         self.room_group_name= 'chat_%s' % self.room_name
+
+        self.redis = await aioredis.create_redis(settings.REDIS_URL)
 
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -21,6 +28,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
 
         ) 
+        self.redis.close()
+        await self.redis.wait_closed()
 
      async def receive(self,text_data):
          data=json.loads(text_data)
@@ -60,3 +69,4 @@ class ChatConsumer(AsyncWebsocketConsumer):
          room = Room.objects.get(slug=room)
 
          Message.objects.create(user=user,room=room, content=message)
+
